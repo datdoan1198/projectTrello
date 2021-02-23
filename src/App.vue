@@ -1,11 +1,12 @@
 <template>
   <div id="app">
-    <BaseAdminLayout v-if="isLogin"  @emitIsLogin="changeIsLogin"/>
+    <BaseAdminLayout v-if="isLogin"/>
     <BaseLoginLayout v-else />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import BaseAdminLayout from './layout/BaseAdminLayout.vue'
 import BaseLoginLayout from './layout/BaseLoginLayout.vue'
 
@@ -15,16 +16,11 @@ export default {
     BaseAdminLayout,
     BaseLoginLayout,
   },
-  data () {
-    return {
-      isLogin: true,
-    }
+  computed: {
+    ...mapState('login', [
+      'isLogin'
+    ])
   },
-  methods:{
-    changeIsLogin (val) {
-      this.isLogin = val;
-    },
-  }
 }
 </script>
 
@@ -35,7 +31,7 @@ export default {
 }
 body {
   position: relative;
-  background-image: url("https://data.1freewallpapers.com/download/winter-snow-branches-fence-winter-landscape-1366x768.jpg") ;
+  background-image: url("https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2400x1600/5957498b9c5e6f9ef359c6ac2d0ceb43/photo-1599551528722-6b6d968512a2.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

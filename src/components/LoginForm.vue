@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 export default {
     name: "loginForm",
     data () {
@@ -46,6 +47,9 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('login', [
+            'changeIsLogin'
+        ]),
         submitFormLogin () {
             let error = false;
             this.errorEmail = '';
@@ -73,7 +77,7 @@ export default {
                 this.colorPW = "1px solid #f54b5e";
             }
             if (!error) {
-                this.$emit('emitIsLoginTrue', true)
+                this.changeIsLogin();
                 this.$router.push('/')
             }
         },

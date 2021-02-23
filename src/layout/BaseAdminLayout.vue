@@ -24,17 +24,20 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
     name: "baseAdminLayout",
     data () {
         return {
             circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-            data: 'sdsd'
         }
     },
     methods: {
+        ...mapMutations('login', [
+            'changeIsLogin',
+        ]),
         clickMe () {
-           this.$emit('emitIsLogin', false)
+           this.changeIsLogin();
            this.$router.push('/login')
         }
     }
