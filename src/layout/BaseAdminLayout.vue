@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import {mapState, mapMutations } from 'vuex'
 export default {
     name: "baseAdminLayout",
     data () {
@@ -32,13 +32,25 @@ export default {
             circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
         }
     },
+    computed: {
+      ...mapState('auth', ['isAuthenticated']),
+    },
     methods: {
         ...mapMutations('login', [
             'changeIsLogin',
+            'changeLoginStatus'
         ]),
-        clickMe () {
+        async clickMe () {
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('vuex')
+            this.changeLoginStatus({
+                isAuthenticated: false,
+                authUser: {},
+            })
+            if (this.$router.currentRoute.name !== 'Login') {
+            await this.$router.push({ name: 'Login' })
+            }
            this.changeIsLogin();
-           this.$router.push('/login')
         }
     }
 }

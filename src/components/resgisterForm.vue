@@ -3,6 +3,19 @@
         <div class="style_logo">
             <img src="" alt="">
         </div>
+
+        <div class="style_input">
+            <div class="war-input">
+                <input :style="{ border: colorName }" class="sui-input" placeholder="Tên đăng nhập" type="text"  v-model="name" >
+            </div>
+            <div v-if="this.errorName != '' " class="error">
+                <svg class="sui-error-message-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path>
+                </svg>
+                <span> {{ errorName }} </span>
+            </div>
+        </div>
+
         <div class="style_input">
             <div class="war-input">
                 <input :style="{ border: colorEmail }" class="sui-input" placeholder="Email" type="email" v-model="email" >
@@ -14,6 +27,7 @@
                 <span> {{ errorEmail }} </span>
             </div>
         </div>
+        
         <div class="style_input">
             <div class="war-input">
                 <input :style="{ border: colorPW }" class="sui-input" placeholder="Mật khẩu" type="password"  v-model="passWord" >
@@ -24,20 +38,8 @@
                 </svg>
                 <span> {{ errorPassWord }} </span>
             </div>
-            <div class="form-task">
-                <div class="register">
-                    <div class="register-box">
-                        <el-button @click="goFormRegister()">Đăng ký?</el-button>
-                    </div>
-                </div>
-                <div class="reset">
-                    <div class="reset-box">
-                        <el-button @click="goRestForm()">Quên mật khẩu?</el-button>
-                    </div>
-                </div>
-            </div>
         </div>
-        <el-button @click="submitFormLogin()" class="login">ĐĂNG NHẬP</el-button>        
+        <el-button @click="submitFormRegister()" class="login">Đăng Ký</el-button>        
     </div>
 </template>
 
@@ -50,10 +52,13 @@ export default {
     name: "loginForm",
     data () {
         return {
+            errorName:'',
             errorEmail: '',
             errorPassWord: '',
+            name:'',
             email: '',
             passWord: '',
+            colorName:'',
             colorPW: '',
             colorEmail: '',
         }
@@ -66,12 +71,28 @@ export default {
             'changeIsLogin',
             'changeLoginStatus'
         ]),
-        submitFormLogin () {
+        validEmail: function (email) {
+            var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
+        },
+        submitFormRegister(){
             let error = false;
             this.errorEmail = '';
             this.errorPassWord = '';
+            this.errorName = '';
+            this.colorName = '';
             this.colorPW = '';
             this.colorEmail = '';
+            if (this.name.length < 6) {
+                this.errorName = 'Tên phải lớn hơn 6 ký tự';
+                this.colorName = "1px solid #f54b5e";
+                error = true;
+            }
+            if (this.name.length == 0) {
+                this.errorName = 'Tên không được để trống';
+                this.colorName = "1px solid #f54b5e";
+                error = true;
+            }
             if (!this.validEmail(this.email)) {
                 this.errorEmail = 'Email sai định dạng, vui lòng nhập lại';
                 this.colorEmail = "1px solid #f54b5e";
@@ -94,40 +115,29 @@ export default {
             }
             if (!error) {
                 axios({
-                    method: 'post',
-                    url: 'http://vuecourse.zent.edu.vn/api/auth/login',
-                    data: {
-                        email: this.email,
-                        password: this.passWord,
-                    },
-                }).then((response) => {
+                method: 'post',
+                url: 'http://vuecourse.zent.edu.vn/api/auth/register',
+                data: {
+                    name: this.name,
+                    email: this.email,
+                    password: this.passWord,
+                },
+                }).then(() => {
                     this.$message({
-                        message: 'Đăng nhập thành công',
+                        message: 'Đăng ký thành công',
                         type: 'success'
                     });
-                    localStorage.setItem('access_token', response.data.access_token)
-                    this.changeLoginStatus({isAuthenticated: true, authUser: {},})
-                    if (this.$router.currentRoute.name !== 'Home') {
-                        this.changeIsLogin();
-                        this.$router.push({ name: 'Home' })
-                    }
+                    this.name = '',
+                    this.email = '',
+                    this.passWord = '',
+                    this.$emit('changeIsLogin', true);
                 }).catch(() => {
                     this.$message({
-                        message: 'Thông tin tài khoản hoặc mật khẩu không chính xác',
+                        message: 'Đăng ký không thành công',
                         type: 'error'
                     });
                 })
             }
-        },
-        goRestForm () {
-            this.$emit('uploadRest', true);
-        },
-        goFormRegister () {
-            this.$emit('changeIsRegister', true);
-        },
-        validEmail: function (email) {
-            var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(email);
         }
     },
 }
@@ -180,58 +190,25 @@ export default {
                 border: 1px solid #0080dd;
             }
         }
-        .form-task{
-            width: 100%;
+        .reset {
             display: flex;
-            justify-content: center;
-            .register {
-                width: 100%;
-                .register-box{
-                    display: flex;
-                    justify-content: flex-start;
-                    margin-top: 8px;
-                    button {
-                        color: #0080dd;
-                        border: 0px;
-                        font-size: 14px;
-                        font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-                        padding: 6px 8px;
-                        background-color: #ffffff;
-                        line-height: 18px;
-                    }
-                    button:hover {
-                        text-decoration: none;
-                        background-color: rgba(0, 0, 0, 0.04);
-                        border-radius: 4px;
-                    }
-                }   
-                
+            justify-content: flex-end;
+            margin-top: 8px;
+            button {
+                color: #0080dd;
+                border: 0px;
+                font-size: 14px;
+                font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+                padding: 6px 8px;
+                background-color: #ffffff;
+                line-height: 18px;
             }
-            .reset {
-                width: 100%;
-                .reset-box{
-                    display: flex;
-                    justify-content: flex-start;
-                    // margin-top: 8px;
-                    button {
-                        color: #0080dd;
-                        border: 0px;
-                        font-size: 14px;
-                        font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-                        padding: 6px 8px;
-                        background-color: #ffffff;
-                        line-height: 18px;
-                    }
-                    button:hover {
-                        text-decoration: none;
-                        background-color: rgba(0, 0, 0, 0.04);
-                        border-radius: 4px;
-                    }
-                }
-                
+            button:hover {
+                text-decoration: none;
+                background-color: rgba(0, 0, 0, 0.04);
+                border-radius: 4px;
             }
         }
-        
         .error {
             display: flex;
             align-items: center;

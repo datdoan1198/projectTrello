@@ -6,9 +6,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import BaseAdminLayout from './layout/BaseAdminLayout.vue'
 import BaseLoginLayout from './layout/BaseLoginLayout.vue'
+import axios from 'axios'
 
 export default {
   name: "App",
@@ -18,9 +19,38 @@ export default {
   },
   computed: {
     ...mapState('login', [
-      'isLogin'
+      'isLogin',
+      'isAuthenticated'
     ])
   },
+  methods:{
+    ...mapMutations('login', ['changeLoginStatus'])
+  },
+  mounted() {
+      axios({
+        method: 'get',
+        url: 'http://vuecourse.zent.edu.vn/api/auth/me',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+      }).then((response) => {
+        this.changeLoginStatus({
+          isAuthenticated: true,
+          authUser: response.data,
+        })
+      }).catch((error) => {
+        if (error.response.status === 401) {
+          this.changeLoginStatus({
+            isAuthenticated: false,
+            authUser: {},
+          })
+          localStorage.removeItem('access_token')
+          if (this.$router.currentRoute.name !== 'Login') {
+            this.$router.push({ name: 'Login' })
+          }
+        }
+      })
+    }
 }
 </script>
 
