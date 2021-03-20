@@ -1,198 +1,38 @@
 export default {
     namespaced: true,
     state: {
-        data: [{
-            "id": 1,
-            "title": "List 1",
-            "user_id": 1,
-            "index": 1,
-            "created_at": null,
-            "updated_at": null,
-            "cards": [
-                {
-                    "id": 1,
-                    "title": "The 1",
-                    "description": "The 001",
-                    "status": 1,
-                    "directory_id": 1,
-                    "index": 1,
-                    "deadline": null,
-                    "user_id": 1,
-                    "created_at": null,
-                    "updated_at": null,
-                    "labels": [
-                        {
-                            "id": 5,
-                            "name": "hungle",
-                            "color": "red",
-                            "user_id": 1,
-                            "created_at": "2021-01-25T08:20:54.000000Z",
-                            "updated_at": "2021-01-25T08:20:54.000000Z",
-                            "pivot": {
-                                "card_id": 1,
-                                "label_id": 5,
-                                "created_at": "2021-01-25T08:20:54.000000Z",
-                                "updated_at": "2021-01-25T08:20:54.000000Z"
-                            }
-                        },
-                        {
-                            "id": 6,
-                            "name": "Đoàn Tien Dat",
-                            "color": "green",
-                            "user_id": 1,
-                            "created_at": "2021-01-25T08:23:53.000000Z",
-                            "updated_at": "2021-01-25T08:23:53.000000Z",
-                            "pivot": {
-                                "card_id": 1,
-                                "label_id": 6,
-                                "created_at": "2021-01-25T08:23:53.000000Z",
-                                "updated_at": "2021-01-25T08:23:53.000000Z"
-                            }
-                        },
-                        {
-                            "id": 7,
-                            "name": "hungle",
-                            "color": "orange",
-                            "user_id": 1,
-                            "created_at": "2021-01-25T08:26:42.000000Z",
-                            "updated_at": "2021-01-25T08:26:42.000000Z",
-                            "pivot": {
-                                "card_id": 1,
-                                "label_id": 7,
-                                "created_at": "2021-01-25T08:26:42.000000Z",
-                                "updated_at": "2021-01-25T08:26:42.000000Z"
-                            }
-                        },
-                        {
-                            "id": 7,
-                            "name": "hungle",
-                            "color": "yellow",
-                            "user_id": 1,
-                            "created_at": "2021-01-25T08:26:42.000000Z",
-                            "updated_at": "2021-01-25T08:26:42.000000Z",
-                            "pivot": {
-                                "card_id": 1,
-                                "label_id": 7,
-                                "created_at": "2021-01-25T08:26:42.000000Z",
-                                "updated_at": "2021-01-25T08:26:42.000000Z"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "id": 2,
-                    "title": "The 2",
-                    "description": "The 002",
-                    "status": 1,
-                    "directory_id": 1,
-                    "index": 2,
-                    "deadline": null,
-                    "user_id": 1,
-                    "created_at": null,
-                    "updated_at": null,
-                    "labels": [
-                        {
-                            "id": 3,
-                            "name": "MIT-Zent",
-                            "color": "green",
-                            "user_id": 1,
-                            "created_at": null,
-                            "updated_at": null,
-                            "pivot": {
-                                "card_id": 2,
-                                "label_id": 3,
-                                "created_at": null,
-                                "updated_at": null
-                            }
-                        }
-                    ]
-                },
-            ]
-        },
-        {
-            "id": 2,
-            "title": "wsdsd",
-            "user_id": 1,
-            "index": 2,
-            "created_at": null,
-            "updated_at": null,
-            "cards": [
-                {
-                    "id": 3,
-                    "title": "The 3",
-                    "description": "The 003",
-                    "status": 1,
-                    "directory_id": 2,
-                    "index": 3,
-                    "deadline": null,
-                    "user_id": 1,
-                    "created_at": null,
-                    "updated_at": null,
-                    "labels": [
-                        {
-                            "id": 4,
-                            "name": "MISS-Zent",
-                            "color": "orange",
-                            "user_id": 1,
-                            "created_at": null,
-                            "updated_at": null,
-                            "pivot": {
-                                "card_id": 3,
-                                "label_id": 4,
-                                "created_at": null,
-                                "updated_at": null
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "id": 3,
-            "title": "Done",
-            "user_id": 1,
-            "index": 2,
-            "created_at": null,
-            "updated_at": null,
-            "cards": [
-                {
-                    "id": 3,
-                    "title": "The 3",
-                    "description": "The 003",
-                    "status": 1,
-                    "directory_id": 2,
-                    "index": 3,
-                    "deadline": null,
-                    "user_id": 1,
-                    "created_at": null,
-                    "updated_at": null,
-                    "labels": [
-                        {
-                            "id": 4,
-                            "name": "MISS-Zent",
-                            "color": "orange",
-                            "user_id": 1,
-                            "created_at": null,
-                            "updated_at": null,
-                            "pivot": {
-                                "card_id": 3,
-                                "label_id": 4,
-                                "created_at": null,
-                                "updated_at": null
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        ],
+        data: [],
         isShowModalMain: 'none',
         card: [],
+        isdeline:false,
+        topLabel:'',
+        leftLabel:'',
+        showLabel: false,
+        labels:[],
+        topFile:'',
+        leftFile:'',
+        isShowModalFile:false,
+        isEditFile:false,
+        idFile: 0,
+        idCard: 0,
+        isCreateWork: true,
+        idShowWork: false,
+        idWork: 0,
+        nameFile: '',
     },
     getters: {
 
     },
     mutations: {
+        setList(state, data){
+            state.data = data
+        },
+        setCard (state, data){
+            state.card = data
+        },
+        setLabel(state, data){
+            state.labels = data
+        },
         addList(state, list) {
             state.data.push(list)
         },
@@ -214,6 +54,53 @@ export default {
             let list = state.data.find((list) => list.id == datdId.listId);
             let cart = list.cards.find((card) => card.id == datdId.cardId);
             state.card = cart;
+        },
+        updateTblLabel (state, data){
+            state.leftLabel = data.left;
+            state.showLabel = true;
+        },
+        closeLabel(state){
+            state.showLabel = false;
+        },
+        pushLabel(state, data){
+            let error = false;
+            state.labels.forEach((label) => {
+                if (label.color == data.color) {
+                    error = true;
+                }
+            });
+            if (!error) {
+                state.labels.push(data) 
+            }
+        },
+        updateSizeFile(state, data){
+            state.topFile = data.top;
+            state.leftFile = data.left;
+            state.isShowModalFile = data.isShow;
+            state.isEditFile = data.isEdit;
+            state.idFile = data.idFile;
+            state.idCard = data.idCard;
+            state.nameFile = data.nameFile;
+        },
+        createWork(state, data){
+            state.topFile = data.top;
+            state.leftFile = data.left;
+            state.idShowWork = data.isShow;
+            state.idCard = data.idCard;
+        },
+        closeModalFile(state){
+            state.isShowModalFile = false;
+            state.idShowWork = false;
+            state.isCreateWork = true;
+            state.isEditFile = true;
+        },
+        deleteWork(state, data){
+            state.topFile = data.top;
+            state.leftFile = data.left;
+            state.idShowWork = data.isShow;
+            state.idCard = data.idCard;
+            state.isCreateWork = false
+            state.idWork = data.idWork
         }
     },
 }

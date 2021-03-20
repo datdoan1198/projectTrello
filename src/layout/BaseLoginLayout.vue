@@ -23,8 +23,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #0093e9;
-        background-image: linear-gradient(160deg,#0093e9,#80d0c7);
+        background-image: url("https://i.pinimg.com/originals/3a/3c/ab/3a3cabd94347cf64dade52882308c780.jpg") ;
         
     }
 }

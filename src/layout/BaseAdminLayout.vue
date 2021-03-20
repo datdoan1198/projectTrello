@@ -2,16 +2,19 @@
     <div class="baseAdminLayout">
         <header> 
             <div class="style-background">
-                <img src="../assets/images/ZimCore Quiver.png" alt="">
-                
-                <el-dropdown>
-                    <div class="block"><el-avatar :size="31" :src="circleUrl"></el-avatar></div>
-                    <el-dropdown-menu slot="dropdown">
+                <div>
+                    <!-- <span><i class="el-icon-s-home"></i></span> -->
+                </div>
+                <img class="logo-product" style="cursor: pointer" @click="goHome()" src="https://a.trellocdn.com/prgb/dist/images/header-logo-spirit-loading.ac67523ad250b82d5ab7.gif" alt="">
+                <el-dropdown class="">
+                    <div v-if="authUser.avatar" class="block"><el-avatar :size="30" :src="'http://vuecourse.zent.edu.vn/storage/users/' + authUser.avatar"></el-avatar></div>
+                    <div v-else class="block"><el-avatar :size="30" :src="circleUrl"></el-avatar></div>
+                    <el-dropdown-menu slot="dropdown" class="dropdown">
                         <router-link to="/infor">
-                        <el-dropdown-item> Thông tin tài khoản </el-dropdown-item>
+                            <el-dropdown-item>Thông tin tài khoản</el-dropdown-item>
                         </router-link>
-                        <el-dropdown-item divided class="login">
-                            <el-button @click="clickMe()"> Đăng xuất </el-button>
+                        <el-dropdown-item divided @click.native="clickMe">
+                            Đăng xuất
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -25,6 +28,7 @@
 
 <script>
 import {mapState, mapMutations } from 'vuex'
+import api from '../api'
 export default {
     name: "baseAdminLayout",
     data () {
@@ -33,26 +37,39 @@ export default {
         }
     },
     computed: {
-      ...mapState('auth', ['isAuthenticated']),
+        ...mapState('login', [
+            'isAuthenticated',
+            'authUser'
+        ]),
     },
     methods: {
+        ...mapMutations('home', [
+            'setList'
+        ]),
         ...mapMutations('login', [
-            'changeIsLogin',
-            'changeLoginStatus'
+            'updateLoginStatus',
+            'updateAuthUser'
         ]),
         async clickMe () {
             localStorage.removeItem('access_token')
             localStorage.removeItem('vuex')
-            this.changeLoginStatus({
-                isAuthenticated: false,
-                authUser: {},
-            })
+            this.updateLoginStatus(false)
+            this.updateAuthUser({})
             if (this.$router.currentRoute.name !== 'Login') {
             await this.$router.push({ name: 'Login' })
             }
-           this.changeIsLogin();
+        },
+        getDirectories(){
+            api.getList().then((response) => {
+                if (response) {
+                    this.setList(response.data.data)
+                }
+            })
+        },
+        goHome () {
+            this.$router.push({ name: 'Home' })
         }
-    }
+    },
 }
 </script>
 
@@ -79,15 +96,17 @@ export default {
             padding: 4px;
             display: flex;
             justify-content: space-between;
-            img {
-                width: 10%;
-                max-height: 32px;
+            .logo-product {
+                margin-top: 5px;
+                width: 7%;
+                max-height: 20px;
             }
             .block {
                 display: flex;
                 justify-content: center;
                 img {
                     width: 100%;
+                    object-fit: cover;
                 }
             }
             button {
@@ -101,8 +120,17 @@ export default {
                 font-size: 16px;
                 margin: 4px 2px;
             }
+            .el-dropdown{
+                a {
+                    text-decoration: none;
+                }
+            }
         }
     }
-    
+}
+.dropdown{
+    a{
+        text-decoration: none;
+    }
 }
 </style>

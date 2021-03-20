@@ -1,20 +1,26 @@
 export default {
     namespaced: true,
     state: {
-        isLogin: true,
         isAuthenticated: false,
         authUser: {},
     },
     getters: {
-
+        // 
     },
     mutations: {
-        changeIsLogin (state){
-            state.isLogin = !state.isLogin;
+        // changeIsLogin (state){
+            
+        //     if (!state.isAuthenticated) {
+        //         state.isLogin = false;
+        //     } else {
+        //         state.isLogin = true;
+        //     }
+        // },
+        updateLoginStatus (state, isAuthenticated) {
+            state.isAuthenticated = isAuthenticated
         },
-        changeLoginStatus (state, data) {
-            state.isAuthenticated = data.isAuthenticated
-            state.authUser = data.authUser
-        }
+        updateAuthUser (state, authUser) {
+            state.authUser = authUser
+        },
     },
 }

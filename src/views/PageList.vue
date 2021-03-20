@@ -1,57 +1,83 @@
 <template>
     <div class="pageList">
         <div class="a">
-            <div class="list" v-for="(list, index) in data" :key="index">
-                <div class="tag">
-                    <div class="list-header">
-                        <h2 ref="text" @click="getInput(index)" class="tagHeader">
-                            {{ list.title }}
-                        </h2>
-                        <textarea @keydown.enter="changeTitle(index)" ref="textarea" maxlength="512" class="list-textarea" style="overflow: hidden; word-wrap: break-word;height: 28px;" v-model="list.title"></textarea>
-                    </div>
-                    <div ref="tagMain" class="tagMain">
-                        <div class="style-content" v-for="(card, indexCart) in list.cards" :key="indexCart">
-                            <div ref="content" class="content" @click="showModalCart(list.id, card.id)">
-                                <div class="list-card-labels">
-                                    <div class="labels" v-for="(label, indexLabel) in card.labels" :key="indexLabel" >
-                                        <span class="card-label" :style="{ backgroundColor: label.color }">
-                                            <span class="label-text" >{{ label.name }}</span>
-                                        </span>
+            <draggable class="dragArea" :list="data" item-key="id" :animation="108" @change="changeDirectorie">
+                <div class="list" v-for="(list, index) in data" :key="list.id">
+                    <div class="tag">
+                        <div class="list-header">
+                            <div>
+                                <h2 ref="text" @click="getInput(index)" class="tagHeader">
+                                    {{ list.title }}
+                                </h2>
+                                <textarea @keydown.enter="changeTitle(index, list.id)" ref="textarea" maxlength="512" class="list-textarea" style="overflow: hidden; word-wrap: break-word;height: 28px;" v-model="list.title"></textarea>
+                            </div>
+                            <span @click="showModalDeleteDirectory(list.id)" class="icon">
+                                <i class="el-icon-delete"></i>
+                                <!-- <div class="list-task">
+                                    <el-button @click="showModalDeleteDirectory(list.id)" type="danger" icon="el-icon-delete" circle></el-button>
+                                </div> -->
+                            </span>
+                            
+                        </div>
+                        <div ref="tagMain" class="tagMain">
+                            <draggable class="sdsdsd" :list="list.cards" item-key="id" :animation="108" group="todo" :id="list.id"  @end="changeCard">
+                            <div class="style-content" v-for="(card, indexCart) in list.cards" :key="card.id" :id="card.id">
+                                <div :ref="getNameRef(index, indexCart)" class="content">
+                                    <div class="list-card-labels">
+                                        <div class="labels" v-for="(label, indexLabel) in card.labels" :key="indexLabel" >
+                                            <span class="card-label" :style="{ backgroundColor: label.color }">
+                                                <span class="label-text" >{{ label.name }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div @click="showModalCart(card.id)">
+                                        {{ card.title }}
+                                    </div>
+                                    <div class="badges">
+                                        <div v-if="card.deadline" :style="{backgroundColor: checkColor(card.status)}" class="deline margin-badges" @click="changeStatus(card.deadline, card.id, card.status)">
+                                            <span :style="{color: checkColorText(card.status)}" >
+                                                <i :style="{color: checkColorText(card.status)}" class="iconAfter el-icon-time"></i>
+                                                <i v-if="card.status == 3" class="iconBefore el-icon-check"></i>
+                                                <i :style="{color: checkColorText(card.status)}" v-else class="iconBefore el-icon-close"></i>
+                                                {{ formatDate(card.deadline) }}
+                                            </span>
+                                        </div>
+                                        <div class="file margin-badges">
+                                            <span><i class="el-icon-paperclip"></i></span>
+                                        </div>
+                                        <div class="task margin-badges">
+                                            <span><i class="el-icon-edit-outline"></i> 1/3</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <span>
-                                    {{ card.description }}
-                                </span>
-                                <div class="badges">
-                                    sdsd
+                                <div ref="editLabel" class="edit-label" @click="showModal(index, indexCart, list.id, card.id)">
+                                    <i class="el-icon-edit"></i>
                                 </div>
                             </div>
-                            <div ref="editLabel" class="edit-label" @click="showModal(index, list.id, card.id)">
-                                <i class="el-icon-edit"></i>
-                            </div>
-                        </div>
-                        <div ref="showCreateLabel" class="createLabel" style="display: none">
-                            <div class="">
-                                <div class="content createLabel-text">
-                                    <textarea ref="tileLabel" placeholder="Nhập tiêu đề cho thẻ này..."></textarea>
-                                </div>
-                                <div class="createLabel-button">
-                                    <div class="buttonCreate">
-                                        <el-button type="success" @click="addLabel(index)">Thêm Mới</el-button>
-                                        <el-link icon="el-icon-close" @click="hiddenCreateLabel(index)"></el-link>
+                            </draggable>
+                            <div ref="showCreateLabel" class="createLabel" style="display: none">
+                                <div class="">
+                                    <div class="content createLabel-text">
+                                        <textarea ref="tileLabel" placeholder="Nhập tiêu đề cho thẻ này..."></textarea>
+                                    </div>
+                                    <div class="createLabel-button">
+                                        <div class="buttonCreate">
+                                            <el-button type="success" @click="addLabel(list.id, list.cards, index)">Thêm Mới</el-button>
+                                            <el-link icon="el-icon-close" @click="hiddenCreateLabel(index)"></el-link>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div ref="hiddenCreateLabel" class="tagFooder">
-                        <div  @click="showCreateLabel(index)" style="display:block">
-                            <i class="el-icon-plus"></i>
-                            <span>Thêm thẻ khác</span>
+                        <div ref="hiddenCreateLabel" class="tagFooder">
+                            <div  @click="showCreateLabel(index)" style="display:block">
+                                <i class="el-icon-plus"></i>
+                                <span>Thêm thẻ khác</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </draggable>
             <div class="style-createList">
                 <div class="createList">
                     <form action="">
@@ -82,7 +108,7 @@
                                 <span class="card-label" :style="{ backgroundColor: label.color }"></span>
                             </div>
                         </div>
-                        <textarea ref="cardQuick" v-model="card.description"></textarea>
+                        <textarea ref="cardQuick"></textarea>
                         <div class="badges">
                             <span>
                                 <div class="badge" title="Thẻ chưa hết hạn.">
@@ -93,9 +119,9 @@
                         </div>
                     </div>
                 </div>
-                <el-button type="success">Lưu</el-button>
+                <el-button @click="updateCard()" type="success">Lưu</el-button>
                 <div class="card-editor">
-                    <span class="card-editor-quick" @click="showModalCart(listId, cardId)">
+                    <span class="card-editor-quick" @click="showModalCart(cardId)">
                         <span class="el-icon-postcard"></span>
                         <span class="card-editor-text">Mở Thẻ</span>
                     </span>
@@ -103,17 +129,21 @@
                         <span class="el-icon-discount"></span>
                         <span class="card-editor-text">Chỉnh sửa nhãn</span>
                     </span>
-                    <span class="card-editor-quick">
+                    <!-- <span class="card-editor-quick">
                         <span class="el-icon-s-custom"></span>
                         <span class="card-editor-text">Thay đổi thành viên</span>
-                    </span>
-                    <span class="card-editor-quick">
+                    </span> -->
+                    <!-- <span class="card-editor-quick">
                         <span class="el-icon-picture"></span>
                         <span class="card-editor-text">Thay đổi bìa</span>
-                    </span>
-                    <span class="card-editor-quick">
+                    </span> -->
+                    <!-- <span class="card-editor-quick">
                         <span class="el-icon-right"></span>
                         <span class="card-editor-text">Di chuyển</span>
+                    </span> -->
+                    <span  @click="showModalDeleteCard()" class="card-editor-quick">
+                        <span class="el-icon-delete"></span>
+                        <span class="card-editor-text">Xóa</span>
                     </span>
                 </div>
             </div>
@@ -123,19 +153,63 @@
                 <Main />
             </div>
         </div>
+        <div v-if="showLabel" class="table-label" :style="{left: leftLabel + 'px'}">
+            <Label />
+        </div>
+        <div v-if="isShowModalFile" class="modal-file" :style="{left: leftFile + 'px', top: topFile + 'px'}">
+            <ModalFile />
+        </div>
+        <div v-if="idShowWork" class="modal-file" :style="{left: leftFile + 'px', top: topFile + 'px'}">
+            <ModalWork />
+        </div>
+        <el-dialog
+        title="Xóa"
+        :visible.sync="centerDialogVisible"
+        width="30%"
+        center>
+        <span>Có chắc chắn muốn xóa danh sách này?</span>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="centerDialogVisible = false">Đóng</el-button>
+            <el-button type="primary" @click="deleteDirectory()">Xác nhận</el-button>
+        </span>
+        </el-dialog>
+        <el-dialog
+        title="Xóa"
+        :visible.sync="centerDialogVisibleCart"
+        width="30%"
+        center>
+        <span>Có chắc chắn muốn xóa thẻ này?</span>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="centerDialogVisibleCart = false">Đóng</el-button>
+            <el-button type="primary" @click="deleteCard()">Xác nhận</el-button>
+        </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import Label from "../components/Lable"
 import { mapMutations, mapState } from 'vuex'
 import Main from '../components/modal/Main'
+import draggable from 'vuedraggable'
+import ModalFile from '../components/ModalFile'
+import ModalWork from '../components/ModalWork'
+import api from '../api'
+import moment from 'moment';
+
 export default {
     name: "pageList",
     components: {
-        Main
+        Main,
+        Label,
+        draggable,
+        ModalFile,
+        ModalWork
     },
     data () {
         return {
+            centerDialogVisibleCart: false,
+            centerDialogVisible: false,
             show: true,
             showAddList: false,
             top:'',
@@ -144,14 +218,30 @@ export default {
             showQuickCard: 'none',
             listId: 0,
             cardId: 0,
+            color: 'white',
         }
     },
     computed: {
         ...mapState('home', [
             'data',
             'isShowModalMain',
-            'card'
+            'card',
+            'topLabel',
+            'leftLabel',
+            'showLabel',
+            'topFile',
+            'leftFile',
+            'isShowModalFile',
+            'isEditFile',
+            'idShowWork'
         ])
+    },
+    mounted () {
+        // api.getList().then((response) => {
+        //     if (response) {
+        //         this.setList(response.data.data)
+        //     }
+        // })  
     },
     methods: {
         ...mapMutations('home', [
@@ -159,37 +249,100 @@ export default {
             'allLabel',
             'showModalMain',
             'closeModalMain',
-            'getcar'
+            'getcar',
+            'setList',
+            'setCard'
         ]),
+        formatDate(val){
+            return moment(val).lang('vi').format('Do MMMM');
+        },
+        formatTime(val){
+            return moment(val).lang('vi').startOf('hour').fromNow(); 
+        },
+        changeDirectorie(e){
+            let newIndex = e.moved.newIndex
+            let idDirectory = e.moved.element.id
+            let data = {
+                'index': newIndex
+            }
+            api.changeIndexDirectorie(data, idDirectory).then((response) => {
+                if (response) {
+                    this.getDirectories();
+                }
+            })
+            
+        },
+        changeCard(event){
+            if (event.from === event.to) {
+                let data = {
+                    'index': event.newIndex,
+                }
+                api.changeIndexCard(data, event.clone.getAttribute('id')).then((response) => {
+                    if (response) {
+                        this.getDirectories();
+                    }
+                })
+            } else {
+                let data = {
+                    'index': event.newIndex,
+                    'directory_id': event.to.getAttribute('id'),
+                }
+                api.changeIndexCardFromDirectory(data, event.clone.getAttribute('id')).then((response) => {
+                    if (response) {
+                        this.getDirectories();
+                    }
+                })
+            }
+        },
         getInput(index){
             this.$refs.text[index].style.display = 'none';
             this.$refs.textarea[index].style.display = 'block';
             this.$refs.textarea[index].focus();
         },
-        changeTitle(index){
+        changeTitle(index, id){
             this.$refs.text[index].style.display = 'block';
             this.$refs.textarea[index].style.display = 'none';
             this.$refs.textarea[index].blur();
+            let title = this.$refs.textarea[index].value;
+            let data = {
+                title: title,
+            }
+            api.updateDirectorie(data, id).then((response) => {
+                if (response) {
+                    this.getDirectories();
+                }
+            })
         },
         showCreateLabel(index){
             this.$refs.showCreateLabel[index].style.display = 'block';
             this.$refs.hiddenCreateLabel[index].style.display = 'none';
             this.$refs.tagMain[index].scrollTop = this.$refs.tagMain[index].scrollHeight;
-            this.$refs.tagMain[index].style.maxHeight = '83vh';
+            this.$refs.tagMain[index].style.maxHeight = '82vh';
         },
         hiddenCreateLabel(index){
             this.$refs.showCreateLabel[index].style.display = 'none';
             this.$refs.hiddenCreateLabel[index].style.display = 'block';
             this.$refs.tagMain[index].style.maxHeight = '77vh';
         },
+        getDirectories(){
+            api.getList().then((response) => {
+                if (response) {
+                    this.setList(response.data.data)
+                }
+            })
+        },
         addlist(){
             let title = this.$refs.titlList.value;
             if (title.length !== 0) {
                 let data = {
-                    title: title,
-                    cards: [],
+                        title: title,
+                        index: this.data.length + 1
                 }
-                this.addList(data);
+                api.createDirectorie(data).then((response) => {
+                    if (response) {
+                        this.getDirectories();
+                    }
+                })
                 this.$refs.titlList.value = '';
             } else {
                 this.$message({
@@ -197,19 +350,20 @@ export default {
                     type: 'warning'
                 });
             }
-            
         },
-        addLabel(index){
+        addLabel(idDirectory, cards, index){
             let title = this.$refs.tileLabel[index].value;
             if (title.length !== 0) {
                 let data = {
                     title: title,
-                    description: title
+                    index: cards.length + 1,
+                    directory_id: idDirectory
                 }
-                this.allLabel({
-                    data: data,
-                    index: index
-                });
+                api.createCard(data).then((response) => {
+                    if (response) {
+                        this.getDirectories();
+                    }
+                })
                 this.$refs.tileLabel[index].value = '';
             } else {
                 this.$message({
@@ -218,10 +372,30 @@ export default {
                 });
             }
         },
-        showModal(index, listId, cardId){
-            let left = this.$refs.content[index].getBoundingClientRect().left;
-            let top = this.$refs.content[index].getBoundingClientRect().top;
-            let width = this.$refs.content[index].clientWidth;
+        updateCard(){
+            let title = this.$refs.cardQuick.value
+            if (title.length != 0) {
+                let data = {
+                    title: title
+                }
+                api.updateCard(data, this.card.id).then((response) => {
+                    if (response) {
+                        this.getDirectories();
+                    }
+                })
+                this.showQuickCard = 'none  ';
+            } else {
+                this.$message({
+                    message: 'Tên thẻ không được để trống',
+                    type: 'warning'
+                });
+            }
+        },
+        showModal(indexList, indexCart, listId, cardId){
+            let refName = indexList + '' +  indexCart;
+            let left = this.$refs.[refName][0].getBoundingClientRect().left;
+            let top = this.$refs.[refName][0].getBoundingClientRect().top;
+            let width = this.$refs.[refName][0].clientWidth;
             this.top = top;
             this.left = left;
             this.width = width;
@@ -230,6 +404,7 @@ export default {
                 listId: listId,
                 cardId: cardId,
             })
+            this.$refs.cardQuick.value = this.card.title
             this.$refs.cardQuick.focus();
             this.closeModalMain();
             this.listId = listId;
@@ -238,16 +413,95 @@ export default {
         closeCardQuick(){
             this.showQuickCard = 'none';
         },
-        showModalCart(listId, cardId){
-            this.getcar({
-                listId: listId,
-                cardId: cardId,
-            })
+        showModalCart(cardId){
+            api.getCardDetail(cardId).then((response) => {
+                    if (response) {
+                        this.setCard(response.data.data)
+                    }
+                })
             this.showModalMain();
             this.showQuickCard = 'none';
-        }
+        },
+        getNameRef(indexList,indexCart){
+            return indexList + '' +  indexCart;
+        },
+        showModalDeleteDirectory(idList){
+            this.centerDialogVisible = true;
+            this.listId = idList;
+        },
+        deleteDirectory(){
+            api.destroyDirectorie(this.listId).then(() => {
+                this.getDirectories();
+            })
+            this.listId = 0;
+            this.centerDialogVisible = false;
+        },
+        showModalDeleteCard(){
+            this.centerDialogVisibleCart = true;
+        },
+        deleteCard(){
+            api.destroyCard(this.cardId).then(() => {
+                this.getDirectories();
+            })
+            this.centerDialogVisibleCart = false;
+            this.showQuickCard = 'none';
+        },
+        checkColor(status){
+            let color = '';
+            if (status == 0) {
+                color = "white";
+            } else if (status == 1){
+                color = '#ec9488';
+            } else if (status == 2) {
+                color = '#f1d737';
+            } else {
+                color = '#61bd4f';
+            }
+            return color
+        },
+        checkColorText(status){
+            let color = '';
+            if (status == 0) {
+                color = "#2c3e50";
+            }
+            return color
+        },
+        checkStatus(time){
+            let status = 0;
+            let dateNow = moment().format('YYYY-MM-DD');
+            if (time < dateNow) {
+                status = 1;
+            } else if (moment(time).format('YYYY-MM-DD') == dateNow) {
+                status = 2;
+            }
+            return status;
+        },
+        changeStatus(time, idCard, statusCard){
+            let status = 3;
+            if (statusCard == 3) {
+                let deadTime = moment(time).lang('vi').format('YYYY-MM-DD HH:mm:ss');
+                status = this.checkStatus(deadTime);
+            }
+            let data = {
+                status: status
+            }
+            api.changeStatusForCard(data, idCard).then(() => {
+                this.getDirectories();
+            })
+        },
+        // getCountFile(idCard){
+        //     api.getCardDetail(idCard).then((response) => {
+                // console.log(response.data.data.files.length)
+                // return response.data.data.files.length;
+                // if (response.data.data.files.length == 0) {
+                //     return true
+                // } else {
+                //     return true
+                // }
+            // })
+        // }
     }
-
+    
 }
 </script>
 
@@ -293,6 +547,9 @@ export default {
         overflow-x: scroll;
         overflow-y: hidden;
         min-height: 91vh;
+        .dragArea{
+            display: flex;
+            justify-content: flex-start;
         .list {
             max-width: 20vw;
             min-width: 20vw;
@@ -307,8 +564,10 @@ export default {
                 .list-header {
                     padding: 10px 8px;
                     min-height: 20px;
-                    padding-right: 36px;
+                    padding-right: 20px;
                     position: relative;
+                    display: flex;
+                    justify-content: space-between;
                     .tagHeader {
                         display: block;
                         font-weight: 600;
@@ -343,6 +602,40 @@ export default {
                     .list-textarea:focus {
                         background-color: #fff;
                         box-shadow: inset 0 0 0 2px #0079bf;
+                    }
+                    .icon{
+                        position: relative;
+                        border-radius: 2px;
+                        cursor: pointer;
+                        i{
+                            padding: 3px 6px 3px 6px;
+                        }
+                        .list-task{
+                            z-index: 10000000;
+                            position: absolute;
+                            padding: 10px;
+                            border-radius: 3px;
+                            background-color: white;
+                            box-shadow: 0 1px 0 rgba(9,30,66,.25);
+                            top: 150%;
+                            display: flex;
+                            justify-content: center;
+                            visibility: hidden;
+                            opacity: 0;
+                            button {
+                                padding: 5px;
+                            }
+                            transition: all 0.3s;
+                        }
+                    }
+                    .icon:hover{
+                        color: #172b4d;
+                        background-color: rgba(9,30,66,.08);
+                    }
+                    .icon:hover .list-task{
+                        visibility: visible;
+                        opacity: 1;
+                        top: 100%;
                     }
                 }
                 .tagMain {
@@ -380,6 +673,41 @@ export default {
                                         display: flex;
                                         justify-content: center;                       
                                     }
+                                }
+                            }
+                            // dd
+                            .badges{
+                                display: flex;
+                                font-size: 14px;
+                                margin-top: 5px;
+                                .margin-badges{
+                                    margin: 0px 4px 4px 0px;
+                                    padding: 3px 5px;
+                                    span{
+                                        i {
+                                            color: #6b778c;
+                                        }
+                                    }
+                                }
+                                .deline{
+                                    cursor: pointer;
+                                    border-radius: 3px;
+                                    color: white;
+                                    span{
+                                        i{
+                                            margin-right: 2px;
+                                            color: white;
+                                        }
+                                        .iconBefore{
+                                            display: none;
+                                        }
+                                    }
+                                }
+                                .deline:hover .iconBefore{
+                                    display: inline-block;
+                                }
+                                .deline:hover .iconAfter{
+                                    display: none;
                                 }
                             }
                             
@@ -497,6 +825,7 @@ export default {
                     }
                 }
             }
+        }   
         }
         .style-createList {
             max-width: 20vw;
@@ -718,6 +1047,28 @@ export default {
         top: 0;
         width: 100%;
         z-index: 20;
+    }
+    .table-label {
+        z-index: 1000;
+        position: absolute;
+        width: 300px;
+        z-index: 30;
+        top: 0;
+        left: 0;
+        background: #fff;
+        border-radius: 3px;
+        box-shadow: 0 8px 16px -4px rgb(9 30 66 / 25%), 0 0 0 1px rgb(9 30 66 / 8%);
+    }
+     .modal-file {
+        z-index: 1000;
+        position: absolute;
+        width: 300px;
+        z-index: 30;
+        top: 0;
+        left: 0;
+        background: #fff;
+        border-radius: 3px;
+        box-shadow: 0 8px 16px -4px rgb(9 30 66 / 25%), 0 0 0 1px rgb(9 30 66 / 8%);
     }
 }
 </style>

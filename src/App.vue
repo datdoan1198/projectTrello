@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <BaseAdminLayout v-if="isLogin"/>
+    <BaseAdminLayout v-if="isAuthenticated"/>
     <BaseLoginLayout v-else />
   </div>
 </template>
@@ -9,7 +9,7 @@
 import { mapMutations, mapState } from 'vuex'
 import BaseAdminLayout from './layout/BaseAdminLayout.vue'
 import BaseLoginLayout from './layout/BaseLoginLayout.vue'
-import axios from 'axios'
+import api from './api'
 
 export default {
   name: "App",
@@ -19,38 +19,30 @@ export default {
   },
   computed: {
     ...mapState('login', [
-      'isLogin',
       'isAuthenticated'
     ])
   },
   methods:{
-    ...mapMutations('login', ['changeLoginStatus'])
+    ...mapMutations('home', [
+      'setList'
+    ]),
+    ...mapMutations('login', [
+      'updateLoginStatus', 
+      'updateAuthUser',
+    ])
   },
   mounted() {
-      axios({
-        method: 'get',
-        url: 'http://vuecourse.zent.edu.vn/api/auth/me',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`
+    api.getAuthUser().then((response) => {
+        if (response) {
+          this.updateAuthUser(response.data)
         }
-      }).then((response) => {
-        this.changeLoginStatus({
-          isAuthenticated: true,
-          authUser: response.data,
-        })
-      }).catch((error) => {
-        if (error.response.status === 401) {
-          this.changeLoginStatus({
-            isAuthenticated: false,
-            authUser: {},
-          })
-          localStorage.removeItem('access_token')
-          if (this.$router.currentRoute.name !== 'Login') {
-            this.$router.push({ name: 'Login' })
-          }
-        }
-      })
-    }
+    })
+    api.getList().then((response) => {
+                if (response) {
+                    this.setList(response.data.data)
+                }
+            })
+  }
 }
 </script>
 
@@ -61,7 +53,7 @@ export default {
 }
 body {
   position: relative;
-  background-image: url("https://trello-backgrounds.s3.amazonaws.com/SharedBackground/2400x1600/5957498b9c5e6f9ef359c6ac2d0ceb43/photo-1599551528722-6b6d968512a2.jpg");
+  background-image: url("https://i.pinimg.com/originals/c3/86/2d/c3862d44112f1ba8a8a7c4836c65af2a.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

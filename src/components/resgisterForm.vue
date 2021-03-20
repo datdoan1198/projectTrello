@@ -40,12 +40,22 @@
             </div>
         </div>
         <el-button @click="submitFormRegister()" class="login">Đăng Ký</el-button>        
+        <div class="callBack">
+            <el-button class="returnLoginBtn" @click="backLogin()">
+                <span class="contenCallback">
+                    <svg class="sui-error-message-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 11H6.83l3.58-3.59L9 6l-6 6 6 6 1.41-1.41L6.83 13H21z"></path>
+                    </svg>
+                    Trở về trang đăng nhập
+                </span>
+            </el-button>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapMutations, mapState } from 'vuex';
-import axios from 'axios';
+import api from '../api'
 // import _ from 'lodash'
 
 export default {
@@ -68,8 +78,6 @@ export default {
     },
     methods: {
         ...mapMutations('login', [
-            'changeIsLogin',
-            'changeLoginStatus'
         ]),
         validEmail: function (email) {
             var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -114,31 +122,25 @@ export default {
                 this.colorPW = "1px solid #f54b5e";
             }
             if (!error) {
-                axios({
-                method: 'post',
-                url: 'http://vuecourse.zent.edu.vn/api/auth/register',
-                data: {
+                let data = {
                     name: this.name,
                     email: this.email,
                     password: this.passWord,
-                },
-                }).then(() => {
-                    this.$message({
-                        message: 'Đăng ký thành công',
-                        type: 'success'
-                    });
+                }
+                api.register(data).then(() => {
+                    this.$message({message: 'Đăng ký thành công', type: 'success'});
                     this.name = '',
                     this.email = '',
                     this.passWord = '',
                     this.$emit('changeIsLogin', true);
                 }).catch(() => {
-                    this.$message({
-                        message: 'Đăng ký không thành công',
-                        type: 'error'
-                    });
+                    this.$message({message: 'Đăng ký không thành công', type: 'error'});
                 })
             }
-        }
+        },
+        backLogin () {
+            this.$emit('uploadRegister', true);
+        },
     },
 }
 </script>
@@ -239,6 +241,77 @@ export default {
         background: #0080dd;
         border-radius: 4px;
         text-transform: none;
+    }
+    .callBack {
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 24px;
+        .returnLoginBtn {
+            color: #0080dd;
+            min-width: 32px!important;
+            font-size: 14px;
+            line-height: 18px;
+            background: transparent;
+            border-radius: 4px;
+            text-transform: none;
+            padding: 6px 8px;
+            border: 0;
+            position: relative;
+            align-items: center;
+            user-select: none;
+            vertical-align: middle;
+            justify-content: center;
+            text-decoration: none;
+                -webkit-tap-highlight-color: transparent;
+            overflow: visible;
+            touch-action: manipulation;
+            .contenCallback {
+                width: 100%;
+                display: inherit;
+                align-items: inherit;
+                justify-content: inherit;
+                box-sizing: border-box;
+                color: #0080dd;
+                font-size: 14px;
+                line-height: 18px;
+                background: transparent;
+                border-radius: 4px;
+                text-transform: none;
+                border: 0;
+                cursor: pointer;
+                margin: 0;
+                display: inline-flex;
+                outline: 0;
+                padding: 0;
+                position: relative;
+                align-items: center;
+                user-select: none;
+                border-radius: 0;
+                vertical-align: middle;
+                justify-content: center;
+                text-decoration: none;
+                background-color: transparent;
+                -webkit-appearance: none;
+                -webkit-tap-highlight-color: transparent;
+                .sui-error-message-icon {
+                    font-size: 1.5rem;
+                    margin-right: 4px;
+                    fill: currentColor;
+                    width: 1em;
+                    height: 1em;
+                    display: inline-block;
+                    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+                    flex-shrink: 0;
+                    user-select: none;
+                    color: #0080dd;
+                    box-sizing: border-box;
+                    line-height: 18px;
+                    text-transform: none;
+                }
+            }
+        }
     }
 }
 </style>

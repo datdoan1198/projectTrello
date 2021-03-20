@@ -2,7 +2,7 @@
     <div class="loginForm">
         <LoginForm v-if="isLogin" @uploadRest="changeFormReset" @changeIsRegister="changeFormResgiste"/>
         <ResetForm v-if="formReset" @upload="changeFormLogin" />
-        <ResgisteForm v-if="formResgist" @changeIsLogin="changeFormLogin" />
+        <ResgisteForm v-if="formResgist" @changeIsLogin="changeFormLogin" @uploadRegister="changeFormLogin" />
     </div>
 </template>
 

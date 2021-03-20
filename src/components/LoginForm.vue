@@ -1,7 +1,7 @@
 <template>
     <div class="loginForm">
         <div class="style_logo">
-            <img src="" alt="">
+            <img src="https://cdn.wallpapersafari.com/41/28/pm0osg.jpg" alt="">
         </div>
         <div class="style_input">
             <div class="war-input">
@@ -25,16 +25,16 @@
                 <span> {{ errorPassWord }} </span>
             </div>
             <div class="form-task">
-                <div class="register">
+                <div class="reset">
                     <div class="register-box">
                         <el-button @click="goFormRegister()">Đăng ký?</el-button>
                     </div>
                 </div>
-                <div class="reset">
+                <!-- <div class="reset">
                     <div class="reset-box">
                         <el-button @click="goRestForm()">Quên mật khẩu?</el-button>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
         <el-button @click="submitFormLogin()" class="login">ĐĂNG NHẬP</el-button>        
@@ -43,7 +43,7 @@
 
 <script>
 import { mapMutations, mapState } from 'vuex';
-import axios from 'axios';
+import api from '../api'
 // import _ from 'lodash'
 
 export default {
@@ -63,8 +63,7 @@ export default {
     },
     methods: {
         ...mapMutations('login', [
-            'changeIsLogin',
-            'changeLoginStatus'
+            'updateLoginStatus',
         ]),
         submitFormLogin () {
             let error = false;
@@ -93,29 +92,17 @@ export default {
                 this.colorPW = "1px solid #f54b5e";
             }
             if (!error) {
-                axios({
-                    method: 'post',
-                    url: 'http://vuecourse.zent.edu.vn/api/auth/login',
-                    data: {
-                        email: this.email,
-                        password: this.passWord,
-                    },
-                }).then((response) => {
-                    this.$message({
-                        message: 'Đăng nhập thành công',
-                        type: 'success'
-                    });
+                let data = {
+                    email: this.email,
+                    password: this.passWord,
+                }
+                api.login(data).then((response) => {
                     localStorage.setItem('access_token', response.data.access_token)
-                    this.changeLoginStatus({isAuthenticated: true, authUser: {},})
+                    this.updateLoginStatus({isAuthenticated: true})
                     if (this.$router.currentRoute.name !== 'Home') {
-                        this.changeIsLogin();
                         this.$router.push({ name: 'Home' })
                     }
                 }).catch(() => {
-                    this.$message({
-                        message: 'Thông tin tài khoản hoặc mật khẩu không chính xác',
-                        type: 'error'
-                    });
                 })
             }
         },
@@ -143,7 +130,7 @@ export default {
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
-    background: #fff;
+    background: #f7f7f7;
     padding: 24px;
     border-radius: 10px;
     .style_logo {
