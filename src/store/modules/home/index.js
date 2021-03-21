@@ -2,7 +2,8 @@ export default {
     namespaced: true,
     state: {
         data: [],
-        isShowModalMain: 'none',
+
+        isShowModalMain: false,
         card: [],
         isdeline:false,
         topLabel:'',
@@ -19,6 +20,7 @@ export default {
         idShowWork: false,
         idWork: 0,
         nameFile: '',
+        image: 'url("https://i.pinimg.com/originals/c3/86/2d/c3862d44112f1ba8a8a7c4836c65af2a.jpg")' 
     },
     getters: {
 
@@ -44,10 +46,10 @@ export default {
             })
         },
         closeModalMain (state){
-            state.isShowModalMain = 'none';
+            state.isShowModalMain = false;
         },
         showModalMain (state){
-            state.isShowModalMain = 'block';
+            state.isShowModalMain = true;
         },
         getcar (state, datdId) {
             state.card = [];
@@ -101,6 +103,9 @@ export default {
             state.idCard = data.idCard;
             state.isCreateWork = false
             state.idWork = data.idWork
+        },
+        changeImage (state, data) {
+            state.image = 'url("' + data + '")'
         }
     },
 }

@@ -21,7 +21,8 @@
                         <div class="upload">
                             <div class="style-image">
                                 <input style="opacity:0" ref="inputFile" type="file" accept="image/*" @change="onChangeUpload">
-                                <img @click="thisFileUpload()" :src="'http://vuecourse.zent.edu.vn/storage/users/' + authUser.avatar" alt="">
+                                <img v-if="authUser.avatar" @click="thisFileUpload()" :src="'http://vuecourse.zent.edu.vn/storage/users/' + authUser.avatar" alt="">
+                                <img v-else @click="thisFileUpload()" :src="circleUrl" alt="">
                                 <div v-if="isImg" class="image-file">
                                     <img :src="imageLocal" alt="">
                                 </div>

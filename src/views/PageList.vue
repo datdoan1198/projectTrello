@@ -5,13 +5,13 @@
                 <div class="list" v-for="(list, index) in data" :key="list.id">
                     <div class="tag">
                         <div class="list-header">
-                            <div>
+                            <div title="Thay đổi tên danh sách">
                                 <h2 ref="text" @click="getInput(index)" class="tagHeader">
                                     {{ list.title }}
                                 </h2>
                                 <textarea @keydown.enter="changeTitle(index, list.id)" ref="textarea" maxlength="512" class="list-textarea" style="overflow: hidden; word-wrap: break-word;height: 28px;" v-model="list.title"></textarea>
                             </div>
-                            <span @click="showModalDeleteDirectory(list.id)" class="icon">
+                            <span title="Xóa danh sách" @click="showModalDeleteDirectory(list.id)" class="icon">
                                 <i class="el-icon-delete"></i>
                                 <!-- <div class="list-task">
                                     <el-button @click="showModalDeleteDirectory(list.id)" type="danger" icon="el-icon-delete" circle></el-button>
@@ -34,7 +34,7 @@
                                         {{ card.title }}
                                     </div>
                                     <div class="badges">
-                                        <div v-if="card.deadline" :style="{backgroundColor: checkColor(card.status)}" class="deline margin-badges" @click="changeStatus(card.deadline, card.id, card.status)">
+                                        <div title="Chuyển trạng thái hoàn thành cho thẻ" v-if="card.deadline" :style="{backgroundColor: checkColor(card.status)}" class="deline margin-badges" @click="changeStatus(card.deadline, card.id, card.status)">
                                             <span :style="{color: checkColorText(card.status)}" >
                                                 <i :style="{color: checkColorText(card.status)}" class="iconAfter el-icon-time"></i>
                                                 <i v-if="card.status == 3" class="iconBefore el-icon-check"></i>
@@ -42,15 +42,9 @@
                                                 {{ formatDate(card.deadline) }}
                                             </span>
                                         </div>
-                                        <div class="file margin-badges">
-                                            <span><i class="el-icon-paperclip"></i></span>
-                                        </div>
-                                        <div class="task margin-badges">
-                                            <span><i class="el-icon-edit-outline"></i> 1/3</span>
-                                        </div>
                                     </div>
                                 </div>
-                                <div ref="editLabel" class="edit-label" @click="showModal(index, indexCart, list.id, card.id)">
+                                <div title="Xem chi tiết thẻ" ref="editLabel" class="edit-label" @click="showModal(index, indexCart, card.id)">
                                     <i class="el-icon-edit"></i>
                                 </div>
                             </div>
@@ -58,7 +52,7 @@
                             <div ref="showCreateLabel" class="createLabel" style="display: none">
                                 <div class="">
                                     <div class="content createLabel-text">
-                                        <textarea ref="tileLabel" placeholder="Nhập tiêu đề cho thẻ này..."></textarea>
+                                        <textarea @keyup.enter="addLabel(list.id, list.cards, index)" ref="tileLabel" placeholder="Nhập tiêu đề cho thẻ này..."></textarea>
                                     </div>
                                     <div class="createLabel-button">
                                         <div class="buttonCreate">
@@ -69,7 +63,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div ref="hiddenCreateLabel" class="tagFooder">
+                        <div title="Thêm thể mới" ref="hiddenCreateLabel" class="tagFooder">
                             <div  @click="showCreateLabel(index)" style="display:block">
                                 <i class="el-icon-plus"></i>
                                 <span>Thêm thẻ khác</span>
@@ -81,11 +75,11 @@
             <div class="style-createList">
                 <div class="createList">
                     <form action="">
-                        <div v-if="show" @click="show = !show" class="placeholder">
+                        <div title="Thêm mới danh sách" v-if="show" @click="show = !show" class="placeholder">
                             <i class="el-icon-plus"></i>
                             <span>Thêm danh sách khác</span>
                         </div>
-                        <input v-else type="text" ref="titlList" placeholder="Nhập tiêu đề danh sách...">
+                        <input @keyup.enter="addlist()" v-else type="text" ref="titlList" placeholder="Nhập tiêu đề danh sách...">
                         <transition name="fade">
                             <div v-if="!show" class="buttonCreate">
                                 <el-button type="success" @click="addlist()">Thêm Mới</el-button>
@@ -108,47 +102,53 @@
                                 <span class="card-label" :style="{ backgroundColor: label.color }"></span>
                             </div>
                         </div>
-                        <textarea ref="cardQuick"></textarea>
+                        <textarea @keydown.enter="updateCard()" ref="cardQuick" v-model="card.title"></textarea>
                         <div class="badges">
-                            <span>
-                                <div class="badge" title="Thẻ chưa hết hạn.">
-                                    <span class="badge-icon el-icon-alarm-clock"></span>
-                                    <span class="badge-text">28 tháng 2</span>
-                                </div>
-                            </span>
+                            <div v-if="card.deadline" :style="{backgroundColor: checkColor(card.status)}" class="deline margin-badges" @click="changeStatus(card.deadline, card.id, card.status)">
+                                <span :style="{color: checkColorText(card.status)}" >
+                                    <i :style="{color: checkColorText(card.status)}" class="iconAfter el-icon-time"></i>
+                                    <i v-if="card.status == 3" class="iconBefore el-icon-check"></i>
+                                    <i :style="{color: checkColorText(card.status)}" v-else class="iconBefore el-icon-close"></i>
+                                        {{ formatDate(card.deadline) }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <el-button @click="updateCard()" type="success">Lưu</el-button>
                 <div class="card-editor">
-                    <span class="card-editor-quick" @click="showModalCart(cardId)">
+                    <span title="Xem chi tiết thẻ" class="card-editor-quick" @click="showModalCart(card.id)">
                         <span class="el-icon-postcard"></span>
                         <span class="card-editor-text">Mở Thẻ</span>
                     </span>
-                    <span class="card-editor-quick">
+                    <span title="Hiển thị chi tiết nhãn" @click="showModalLabel('label')" ref="label" class="card-editor-quick">
                         <span class="el-icon-discount"></span>
                         <span class="card-editor-text">Chỉnh sửa nhãn</span>
                     </span>
-                    <!-- <span class="card-editor-quick">
-                        <span class="el-icon-s-custom"></span>
-                        <span class="card-editor-text">Thay đổi thành viên</span>
-                    </span> -->
-                    <!-- <span class="card-editor-quick">
-                        <span class="el-icon-picture"></span>
-                        <span class="card-editor-text">Thay đổi bìa</span>
-                    </span> -->
+                    <span title="Đặt lại thời gian hết hạn" class="card-editor-quick deadline">
+                        <div class="input-deline" >
+                            <el-date-picker
+                            v-model="card.deadline"
+                            type="datetime"
+                            placeholder="Select date and time"
+                            @change="setTimeForCard">
+                            </el-date-picker>
+                        </div>
+                        <span class="el-icon-alarm-clock"></span>
+                        <span class="card-editor-text">Ngày hết hạn</span>
+                    </span>
                     <!-- <span class="card-editor-quick">
                         <span class="el-icon-right"></span>
                         <span class="card-editor-text">Di chuyển</span>
                     </span> -->
-                    <span  @click="showModalDeleteCard()" class="card-editor-quick">
+                    <span title="Xóa thẻ" @click="showModalDeleteCard()" class="card-editor-quick">
                         <span class="el-icon-delete"></span>
                         <span class="card-editor-text">Xóa</span>
                     </span>
                 </div>
             </div>
         </div>
-        <div class="sss" :style="{display:isShowModalMain}">
+        <div v-if="isShowModalMain"  class="sss" style="display: block">
             <div class="window-overlay" >
                 <Main />
             </div>
@@ -251,7 +251,9 @@ export default {
             'closeModalMain',
             'getcar',
             'setList',
-            'setCard'
+            'setCard',
+            'updateTblLabel',
+            'setLabel'
         ]),
         formatDate(val){
             return moment(val).lang('vi').format('Do MMMM');
@@ -356,7 +358,7 @@ export default {
             if (title.length !== 0) {
                 let data = {
                     title: title,
-                    index: cards.length + 1,
+                    index: cards.length,
                     directory_id: idDirectory
                 }
                 api.createCard(data).then((response) => {
@@ -391,7 +393,7 @@ export default {
                 });
             }
         },
-        showModal(indexList, indexCart, listId, cardId){
+        showModal(indexList, indexCart, cardId){
             let refName = indexList + '' +  indexCart;
             let left = this.$refs.[refName][0].getBoundingClientRect().left;
             let top = this.$refs.[refName][0].getBoundingClientRect().top;
@@ -400,15 +402,9 @@ export default {
             this.left = left;
             this.width = width;
             this.showQuickCard = 'block';
-            this.getcar({
-                listId: listId,
-                cardId: cardId,
-            })
-            this.$refs.cardQuick.value = this.card.title
+            this.getcard(cardId);
             this.$refs.cardQuick.focus();
             this.closeModalMain();
-            this.listId = listId;
-            this.cardId = cardId;
         },
         closeCardQuick(){
             this.showQuickCard = 'none';
@@ -421,6 +417,22 @@ export default {
                 })
             this.showModalMain();
             this.showQuickCard = 'none';
+        },
+        showModalLabel(refName){
+            let left = this.$refs.[refName].getBoundingClientRect().left;
+            let data = {
+                'left': left,
+            }
+            console.log(data)
+            this.updateTblLabel(data);
+            this.getLabels();
+        },
+        getLabels(){
+            api.getLabels().then((response) => {
+                    if (response) {
+                        this.setLabel(response.data.data)
+                    }
+                })
         },
         getNameRef(indexList,indexCart){
             return indexList + '' +  indexCart;
@@ -440,7 +452,7 @@ export default {
             this.centerDialogVisibleCart = true;
         },
         deleteCard(){
-            api.destroyCard(this.cardId).then(() => {
+            api.destroyCard(this.card.id).then(() => {
                 this.getDirectories();
             })
             this.centerDialogVisibleCart = false;
@@ -476,6 +488,13 @@ export default {
             }
             return status;
         },
+        getcard(cardId){
+            api.getCardDetail(cardId).then((response) => {
+                if (response) {
+                    this.setCard(response.data.data)
+                }
+            })
+        },
         changeStatus(time, idCard, statusCard){
             let status = 3;
             if (statusCard == 3) {
@@ -487,7 +506,28 @@ export default {
             }
             api.changeStatusForCard(data, idCard).then(() => {
                 this.getDirectories();
+                this.getcard(idCard);
             })
+        },
+        setTimeForCard(val){
+            if (val) {
+                let date = moment(val).lang('vi').format('YYYY-MM-DD HH:mm:ss');
+                let data = {
+                    deadline: date
+                }
+                api.changeDelineForCard(data, this.card.id).then((response) => {
+                    if (response) {
+                        this.getDirectories();
+                        this.getcard(this.card.id);
+                    }
+                })
+                // setTimeout(() => {
+                //     if (this.card.status != 3) {
+                //         alert(this.card.status)
+                //         this.changeStatus(val);
+                //     } 
+                // }, 500);
+            }
         },
         // getCountFile(idCard){
         //     api.getCardDetail(idCard).then((response) => {
@@ -500,8 +540,12 @@ export default {
                 // }
             // })
         // }
-    }
-    
+    },
+    watch: {
+        card(){
+            this.deadline = this.card.deadline
+        }
+    } 
 }
 </script>
 
@@ -736,8 +780,8 @@ export default {
                         }
                     }
                     .style-content:hover .edit-label {
-                            visibility: visible;
-                        }
+                        visibility: visible;
+                    }
                     .createLabel {
                         .createLabel-text {
                             background-color: #fff;
@@ -836,7 +880,7 @@ export default {
                 height: auto;
                 padding: 4px;
                 border-radius: 3px;
-                background-color: hsla(0,0%,100%,.24);
+                background-color: rgba(255, 255, 255, 0.47);
                 .placeholder {
                     color: #172b4d;
                     cursor: pointer;
@@ -961,36 +1005,38 @@ export default {
                         outline: none;
                         border: none;
                     }
-                    .badges {
-                        float: left;
-                        max-width: 100%;
-                        margin-left: -2px;
-                        .badge {
-                            color: #5e6c84;
+                    .badges{
+                        display: flex;
+                        font-size: 14px;
+                        margin-top: 5px;
+                        .margin-badges{
+                            margin: 0px 4px 4px 0px;
+                            padding: 3px 5px;
+                            span{
+                                i {
+                                    color: #6b778c;
+                                }
+                            }
+                        }
+                        .deline{
+                            cursor: pointer;
+                            border-radius: 3px;
+                            color: white;
+                                span{
+                                    i{
+                                        margin-right: 2px;
+                                        color: white;
+                                    }
+                                .iconBefore{
+                                    display: none;
+                                }
+                            }
+                        }
+                        .deline:hover .iconBefore{
                             display: inline-block;
-                            margin: 0 4px 4px 0;
-                            max-width: 100%;
-                            min-height: 20px;
-                            overflow: hidden;
-                            position: relative;
-                            padding: 2px;
-                            text-decoration: none;
-                            text-overflow: ellipsis;
-                            vertical-align: top;
-                            .badge-icon {
-                                color: #6b778c;
-                                vertical-align: top;
-                                height: 20px;
-                                font-size: 16px;
-                                line-height: 15px;
-                                width: 20px;
-                            }
-                            .badge-text {
-                                font-size: 12px;
-                                padding: 0 4px 0 2px;
-                                vertical-align: top;
-                                white-space: nowrap;
-                            }
+                        }
+                        .deline:hover .iconAfter{
+                            display: none;
                         }
                     }
                 }
@@ -1027,6 +1073,16 @@ export default {
                     transition: margin 0.3s;
                     .card-editor-text {
                         margin-left: 4px;
+                    }
+                }
+                .deadline{
+                    position: relative;
+                    .input-deline {
+                        position: absolute;
+                        top: -10px;
+                        left: 0;
+                        z-index: 1000;
+                        opacity: 0;
                     }
                 }
                 .card-editor-quick:hover {
@@ -1069,6 +1125,23 @@ export default {
         background: #fff;
         border-radius: 3px;
         box-shadow: 0 8px 16px -4px rgb(9 30 66 / 25%), 0 0 0 1px rgb(9 30 66 / 8%);
+    }
+    .el-dialog__wrapper{
+        .el-dialog{
+            .el-dialog__header{
+                display: flex;
+                justify-content: center;
+                span{
+                    color: #f46c6c;
+                    font-size: 25px;
+                }
+            }
+            .el-dialog__body{
+                span{
+                    font-size: 16px;
+                }
+            }
+        }
     }
 }
 </style>

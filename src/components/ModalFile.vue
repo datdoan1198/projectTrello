@@ -11,7 +11,7 @@
             <div class="content-label-create">
                 <div v-if="isEditFile" class="name-label">
                     <span>Liên kết tên</span>
-                    <input v-model="nameFile" class="search-label" type="text" placeholder="Tên nhãn...">
+                    <input v-model="text" class="search-label" type="text" placeholder="Tên nhãn...">
                 </div>
                 <div v-else class="labels">
                     <span>Tập tin đính kèm sẽ bị xoá vĩnh viễn và bạn sẽ không thể hoàn tác.</span>
@@ -42,7 +42,11 @@ export default {
     },
     data () {
         return {
+            text:'',
         }
+    },
+    mounted () {
+        this.text = this.nameFile;
     },
     methods:{
         ...mapMutations('home', [
@@ -69,12 +73,12 @@ export default {
         },
         updateFile(){
             let data = {
-                'name': this.nameFile,
+                'name': this.text,
             }
             api.updateFile(data, this.idFile).then(() => {
                 this.getDirectories();
                 this.getcard(this.idCard);
-                this.nameFile = '';
+                this.text = '';
                 this.closeModalFile();
             })
         },
@@ -85,7 +89,7 @@ export default {
                 this.closeModalFile();
             })
         }
-    }
+    },
     
 }
 </script>

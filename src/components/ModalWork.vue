@@ -3,7 +3,7 @@
         <div class="btn-edit">
             <div class="header-label">
                 <span v-if="isCreateWork" class="text-header">Thêm danh sách công việc</span>
-                <span v-else class="text-header">Bạn muốn xoá Việc cần làm?</span>
+                <span v-else class="text-header">Bạn muốn xoá việc cần làm?</span>
                 <span @click="close()" class="icon-close-label">
                     <i class="el-icon-close"></i>
                 </span>

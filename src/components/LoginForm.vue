@@ -117,6 +117,16 @@ export default {
             return re.test(email);
         }
     },
+    watch: {
+        email () {
+            this.errorEmail = '';
+            this.colorEmail = "";
+        },
+        passWord () {
+            this.errorPassWord = '';
+            this.colorPW = "";
+        }
+    }
 }
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :style="{backgroundImage: image}">
     <BaseAdminLayout v-if="isAuthenticated"/>
     <BaseLoginLayout v-else />
   </div>
@@ -20,7 +20,15 @@ export default {
   computed: {
     ...mapState('login', [
       'isAuthenticated'
+    ]),
+    ...mapState('home', [
+      'image'
     ])
+  },
+  data () {
+    return {
+      // image: 'url("https://i.pinimg.com/originals/c3/86/2d/c3862d44112f1ba8a8a7c4836c65af2a.jpg")'  
+    }
   },
   methods:{
     ...mapMutations('home', [
@@ -38,10 +46,10 @@ export default {
         }
     })
     api.getList().then((response) => {
-                if (response) {
-                    this.setList(response.data.data)
-                }
-            })
+      if (response) {
+        this.setList(response.data.data)
+      }
+    })
   }
 }
 </script>
@@ -53,19 +61,18 @@ export default {
 }
 body {
   position: relative;
-  background-image: url("https://i.pinimg.com/originals/c3/86/2d/c3862d44112f1ba8a8a7c4836c65af2a.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
   background-size: cover;
-  height: 100vh;
-  width: 100vw;
+  // height: 100vh;
+  // width: 100vw;
   overflow: hidden;
 }
 #app {
-  position: absolute;
-  width: 100vw;
+  background-position: 50%;
+  background-size: cover;
+  height: 100vh;
   top: 0;
   left: 0;
+      overflow: hidden;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

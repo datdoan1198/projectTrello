@@ -22,24 +22,24 @@
                                 :style="{ backgroundColor: label.color }">
                                     {{ label.name }}
                                 </span>
-                                <span @click="showLabel('iconLabel')" ref="iconLabel" class="card-detail-item-add-button el-icon-plus"></span>
+                                <span title="Hiển thị chi tiết nhãn" @click="showLabel('iconLabel')" ref="iconLabel" class="card-detail-item-add-button el-icon-plus"></span>
                             </div>
                         </div>
-                        <div v-if="card.deadline" class="card-detail-due-date" ref="deline">
+                        <div title="Đặt thời gian hết hạn" v-if="card.deadline" class="card-detail-due-date" ref="deline">
                             <h3>NGÀY HẾT HẠN</h3>
                             <div class="card-detail-due-date-badge">
                                 <input @click="changeStatusDone()" ref="inputDeLine" class="card-detail-badge-due-date-complete-box" type="checkbox">
                                 <div class="text-deline">
                                     <div class="input-date">
                                         <el-date-picker
-                                            v-model="deadline"
+                                            v-model="card.deadline"
                                             type="datetime"
                                             placeholder="Select date and time"
                                             @change="setTimeForCard">
                                         </el-date-picker>
                                     </div>
                                     <div>
-                                        <span class="button-link" >{{ formatDate(deadline)}}</span>
+                                        <span class="button-link" >{{ formatDate(card.deadline)}}</span>
                                         <span ref="status" class="text-error-date"></span>
                                         <span class="icon"><i class="el-icon-arrow-down"></i></span>
                                     </div>
@@ -59,7 +59,7 @@
                                 </div>
                             </div>
                             <div class="u-gutter">
-                                <div class="editable">
+                                <div title="Chỉnh sửa mô tả cho thẻ" class="editable">
                                     <div v-if="!isTextDescription" class="description-content" @click="showDescriptionEdit()">
                                         <p v-if="card.description">{{ card.description }}</p>
                                         <div v-else class="default-discription">
@@ -92,10 +92,10 @@
                                     <div class="content-text">
                                         <p>{{ file.name }} <span class="el-icon-top-right"></span></p>
                                         <span> Đã thêm {{ formatTime(file.created_at)}}</span> - 
-                                        <span ref="deleteFile" class="btn" @click="deleteFile(file.id, indexFile)">
+                                        <span title="Xóa file" ref="deleteFile" class="btn" @click="deleteFile(file.id, indexFile)">
                                             Xóa
                                         </span> - 
-                                        <span ref="updateFile" class="btn editFile" @click="editFile(file.name, file.id, indexFile)">
+                                        <span title="Chỉnh sửa file" ref="updateFile" class="btn editFile" @click="editFile(file.name, file.id, indexFile)">
                                             Chỉnh sửa
                                         </span>
                                     </div>
@@ -107,8 +107,8 @@
                         <div class="work" v-for="(work, indexWork) in card.check_lists" :key="indexWork">
                             <div ref="workTitle" class="work-header">
                                 <span class="el-icon-edit-outline"></span>
-                                <h3 @click="showEditWork(indexWork)">{{ work.title }}</h3>
-                                <div ref="delWork" @click="delWork(work.id, indexWork)" class="editable">
+                                <h3 title="Chỉnh sửa việc cần làm" @click="showEditWork(indexWork)">{{ work.title }}</h3>
+                                <div title="Xóa việc cần làm" ref="delWork" @click="delWork(work.id, indexWork)" class="editable">
                                     Xóa
                                 </div>
                             </div>
@@ -126,7 +126,7 @@
                                 <el-progress :stroke-width="8" :color="customColors" :percentage="checkPercentCompleted(work.check_list_childs)"></el-progress>
                             </div>
                             <div class="box-children-work">
-                                <div class="work-chidren" v-for="(chidrenWork, indexChildrenWork) in work.check_list_childs" :key="chidrenWork.id">
+                                <div title="Chỉnh sửa chỉ mục" class="work-chidren" v-for="(chidrenWork, indexChildrenWork) in work.check_list_childs" :key="chidrenWork.id">
                                     <div class="check-box">
                                         <input @click="checkStatusChildrenWork(indexWork, indexChildrenWork, chidrenWork.id)" :ref="getNameRef(indexWork, indexChildrenWork)" type="checkbox" :checked="chidrenWork.status ? true : false">
                                     </div>
@@ -166,15 +166,15 @@
                     <div class="window-module">
                         <h3>Thêm vào thẻ</h3>
                         <div >
-                            <span ref="work" @click="showModalCreateWork(card.id)" class="slide-tag" >
+                            <span title="Thêm mới việc cần làm" ref="work" @click="showModalCreateWork(card.id)" class="slide-tag" >
                                 <span class="icon el-icon-notebook-2"></span>
                                 <span class="button-link">Việc cần làm</span>
                             </span>
-                            <span @click="showLabel('label')" ref="label" class="slide-tag">
+                            <span title="Hiển thị chi tiết nhãn" @click="showLabel('label')" ref="label" class="slide-tag">
                                 <span class="icon el-icon-discount"></span>
                                 <span class="button-link">Chỉnh sửa nhãn</span>
                             </span>
-                            <span class="slide-tag deline">
+                            <span title="Đặt thời gian hết hạn" class="slide-tag deline">
                                 <div class="input-deline" >
                                     <el-date-picker
                                         v-model="deadline"
@@ -186,7 +186,7 @@
                                 <span class="icon el-icon-alarm-clock"></span>
                                 <span class="button-link" >Ngày hết hạn</span>
                             </span>
-                            <span class="slide-tag box-file">
+                            <span title="Thêm mới file" class="slide-tag box-file">
                                 <div class="input-file">
                                     <input ref="inputFile" type="file" accept="image/*" @change="uploadFile">
                                 </div>
