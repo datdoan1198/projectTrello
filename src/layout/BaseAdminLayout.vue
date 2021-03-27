@@ -30,7 +30,7 @@
             <div class="header">
                 <span class=""></span>
                 <h3>Thay đổi phông nền</h3>
-                <span @click="closeImage()" class="el-icon-close"></span>
+                <span @click="closeImage()" class="close el-icon-close"></span>
             </div>
             <div class="images">
                 <el-row>
@@ -188,6 +188,9 @@ export default {
             justify-content: space-between;
             padding: 10px;
             border-bottom: 1px solid rgba(9,30,66,.13);;
+            .close{
+                cursor: pointer;
+            }
         }
         .images {
             .image{
